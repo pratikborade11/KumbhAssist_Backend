@@ -3,9 +3,8 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import sendOtp from "../utils/sendOtp.js";
-import jwt from "jsonwebtoken";//Change_18
+import jwt from "jsonwebtoken"; //Change_18
 import UserProfile from "../models/userProfile.model.js"; // Adjust the path if necessary
-
 
 const generateOtp = () => Math.floor(Math.random() * 10000).toString();
 
@@ -15,13 +14,10 @@ const generateToken = (user) => {
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRATION }
     );
-   
-
-
-};//change_18
+}; //change_18
 
 const userProfile = asyncHandler(async (req, res) => {
-    const {fullName, dob, adharNumber, age, gender, address} = req.body;
+    const { fullName, dob, adharNumber, age, gender, address } = req.body;
     const userID = req.user?._id;
 
     // Check if the user exists
@@ -50,7 +46,9 @@ const userProfile = asyncHandler(async (req, res) => {
     // Save the profile to the database
     const savedProfile = await userProfile.save();
 
-    res.status(201).json(new ApiResponse(201, savedProfile, "User Profile created successfully"))
+    res.status(201).json(
+        new ApiResponse(201, savedProfile, "User Profile created successfully")
+    );
     // .json({
     //     message: "User profile created successfully",
     //     profile: savedProfile,
@@ -93,7 +91,11 @@ const registerUser = asyncHandler(async (req, res) => {
     await sendOtp(phoneNumber, otp);
 
     res.status(200).json(
-        new ApiResponse(200, null, "OTP sent. Please verify to complete registration.")
+        new ApiResponse(
+            200,
+            null,
+            "OTP sent. Please verify to complete registration."
+        )
     );
 });
 
@@ -166,8 +168,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
     // res.status(200).json(new ApiResponse(200, { user, token }, "Registration successful!"));
     // res.status(200).json({ status: 200, data: { user, token }, message: "Registration successful!" });
     res.status(200).json({ user, token });
-
-});//change_18
+}); //change_18
 
 const verifyToken = asyncHandler(async (req, res) => {
     const { token } = req.body;
@@ -182,9 +183,11 @@ const verifyToken = asyncHandler(async (req, res) => {
 
         res.status(200).json(new ApiResponse(200, { user }, "Token is valid"));
     } catch (error) {
-        res.status(401).json(new ApiResponse(401, null, "Token is invalid or expired"));
+        res.status(401).json(
+            new ApiResponse(401, null, "Token is invalid or expired")
+        );
     }
-});//Change_18
+}); //Change_18
 
 const resendOtp = asyncHandler(async (req, res) => {
     const { phoneNumber } = req.body;
@@ -214,9 +217,13 @@ const resendOtp = asyncHandler(async (req, res) => {
     await sendOtp(phoneNumber, newOtp);
 
     res.status(200).json(
-        new ApiResponse(200, null, "New OTP sent. Please verify to complete registration.")
+        new ApiResponse(
+            200,
+            null,
+            "New OTP sent. Please verify to complete registration."
+        )
     );
 });
 //Change_19
 
-export { registerUser, verifyOtp , verifyToken , resendOtp, userProfile};
+export { registerUser, verifyOtp, verifyToken, resendOtp, userProfile };
