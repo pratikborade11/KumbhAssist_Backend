@@ -7,7 +7,7 @@ import {
     resendOtp,
     userProfile,
     userDetails,
-    updateUserDetails
+    updateUserDetails,
 } from "../controllers/user.controller.js";
 import protectRoute from "../middlewares/protectRoutes.js";
 
@@ -18,13 +18,13 @@ router.route("/verify-otp").post(verifyOtp);
 router.route("/verify-token").post(verifyToken);
 router.route("/resend-otp").post(resendOtp); //change_19_jan
 
-// router
-//     .route("/user-profile")
-//     .post(protectRoute, userProfile)
-//     .patch(protectRoute, updateProfile);
+router
+    .route("/user-profile")
+    .post(protectRoute, userProfile)
+    .patch(protectRoute, updateUserDetails);
 
-router.route("/user-profile").post(userProfile).patch(updateUserDetails);
+// router.route("/user-profile").post(userProfile).patch(updateUserDetails);    for testing purpose
 
-router.route("/user-details/:user").get( userDetails);
+router.route("/user-details/:user").get(userDetails);
 
 export default router;

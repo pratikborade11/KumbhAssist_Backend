@@ -4,7 +4,7 @@ import cors from "cors";
 import mongoConnect from "./db/index.js";
 import "dotenv/config";
 import { app, httpServer } from "./socket/socket.js";
-import path from "path"
+import path from "path";
 
 app.use(cors());
 
@@ -15,10 +15,14 @@ app.use(morgan("dev"));
 
 import usersRouter from "./routes/user.routes.js";
 import healthCheckRouter from "./routes/healthCheck.js";
+import sosRouter from "./routes/sos.routes.js";
+import adminRouter from "./routes/admin.routes.js";
 
-// Health check route
-app.use("/health", healthCheckRouter);
+app.use("/health", healthCheckRouter); // Health check route
+
 app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/sos", sosRouter);
+app.use("/api/v1/admin", adminRouter);
 
 // for testing socket functionality only
 app.get("/", (req, res) => {
