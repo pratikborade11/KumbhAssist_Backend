@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        p {
+            color: brown;
+        }
+    </style>
+</head>
+<body>
+    <p>Hello</p>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Assuming you have the authUser object with userId
+        const authUser = {
+            _id: "user123" // Replace with the actual user ID
+        };
+
+        // Connect to Socket.io server running on localhost
+        const socket = io("http://localhost:3000", {  // Replace with your local backend URL and port
+            query: {
+                userId: authUser._id,  // Pass userId as a query parameter
+            }
+        });
+
+        socket.on("connect", () => {
+            console.log("Connected to the server with socket ID:", socket.id);
+        });
+
+        // You can now listen for any events
+        socket.on("message", (data) => {
+            console.log("Received message:", data);
+        });
+    </script>
+</body>
+</html>

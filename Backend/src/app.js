@@ -1,8 +1,11 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import mongoConnect from "./db/index.js";
+import "dotenv/config";
+import { app, httpServer } from "./socket/socket.js";
+import path from "path"
 
-const app = express();
 app.use(cors());
 
 app.use(express.json());
@@ -11,7 +14,19 @@ app.use(express.static("public"));
 app.use(morgan("dev"));
 
 import usersRouter from "./routes/user.routes.js";
+import healthCheckRouter from "./routes/healthCheck.js";
 
+// Health check route
+app.use("/health", healthCheckRouter);
 app.use("/api/v1/users", usersRouter);
 
-export default app;
+// for testing socket functionality only
+app.get("/", (req, res) => {
+    res.sendFile(path.resolve("public", "index.html")); // Correct path to index.html
+});
+
+mongoConnect().then(() => {
+    httpServer.listen(process.env.PORT || 5000, () => {
+        console.log(`Server running on port ${process.env.PORT}`);
+    });
+});
