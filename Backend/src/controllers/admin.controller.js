@@ -48,9 +48,6 @@ const loginAdmin = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Admin not found");
     }
 
-    console.log(admin);
-    
-
     // Verify password
     const isPasswordValid = await admin.isPasswordCorrect(password);
     if (!isPasswordValid) {
