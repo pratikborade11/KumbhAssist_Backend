@@ -5,10 +5,10 @@ import { asyncHandler } from "../utils/asyncHandler.js"; // Async handler to man
 
 // Admin Registration Controller
 const registerAdmin = asyncHandler(async (req, res) => {
-    const { username, phoneNumber, permissions, adminLevel } = req.body;
+    const { userName, password, phoneNumber, permissions, adminLevel } = req.body;
 
-    if (!(username && phoneNumber)) {
-        throw new ApiError(400, "Username or phone number missing");
+    if (!(userName && phoneNumber && password)) {
+        throw new ApiError(400, "userName or phone number missing");
     }
 
     const existingAdmin = await Admin.findOne({ phoneNumber });
@@ -19,9 +19,10 @@ const registerAdmin = asyncHandler(async (req, res) => {
 
     // Create a new admin with the provided information
     const newAdmin = new Admin({
-        username,
+        userName,
+        password,
         phoneNumber,
-        permissions: permissions || ["view", "manage-users"], // Default permissions
+        permissions: permissions || ["view", "manage-admins"], // Default permissions
         adminLevel: adminLevel || "basic", // Default to basic admin level
     });
 
@@ -33,4 +34,58 @@ const registerAdmin = asyncHandler(async (req, res) => {
     );
 });
 
-export default registerAdmin;
+const loginAdmin = asyncHandler(async (req, res) => {
+    const { userName, password } = req.body;
+
+    // Validate input
+    if (!userName || !password) {
+        throw new ApiError(400, "Username and password are required");
+    }
+
+    // Check if admin exists
+    const admin = await Admin.findOne({ userName });
+    if (!admin) {
+        throw new ApiError(404, "Admin not found");
+    }
+
+    console.log(admin);
+    
+
+    // Verify password
+    const isPasswordValid = await admin.isPasswordCorrect(password);
+    if (!isPasswordValid) {
+        throw new ApiError(401, "Invalid credentials");
+    }
+
+    // Generate JWT token
+    const token = await admin.generateToken();
+
+    // Update last login time
+    admin.lastLogin = new Date();
+    await admin.save();
+
+    // Fetch admin details without password
+    const loggedInAdmin = await Admin.findById(admin._id).select("-password");
+
+    // Cookie options
+    const options = {
+        httpOnly: true,
+        secure: true,
+    };
+
+    return res
+        .status(200)
+        .cookie("jwt", token, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    admin: loggedInAdmin,
+                    token,
+                },
+                "Admin logged in successfully."
+            )
+        );
+});
+
+export { loginAdmin, registerAdmin };
