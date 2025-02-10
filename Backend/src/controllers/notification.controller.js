@@ -27,14 +27,23 @@ export const sendNotification = asyncHandler(async (req, res) => {
             .json(new ApiError(400, "Title and message are required"));
     }
 
-    const notification = await Notification.create({ title, message, adminId });
+    let imageUrl = null;
 
-    // Emit real-time notification to all connected users
-    io.emit("newNotification", notification);
+    // Check if an image is uploaded
+    if (req.files && req.files.image) {
+        const uploadedImage = await uploadToCloudinary(req.files.image.tempFilePath);
+        if (uploadedImage) {
+            imageUrl = uploadedImage.secure_url;
+        }
+    }
 
-    res.status(201).json(
-        new ApiResponse(201, notification, "Notification sent successfully")
-    );
+    // Store notification in the database
+    const notification = await Notification.create({ title, message, adminId, image: imageUrl });
+
+    // Emit notification to all users except admin
+    req.io.sockets.emit("newNotification", notification);
+
+    res.status(201).json(new ApiResponse(201, notification, "Notification sent successfully"));
 });
 
 // User fetches only today's notifications

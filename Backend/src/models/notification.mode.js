@@ -9,6 +9,7 @@ const notificationSchema = new mongoose.Schema(
             ref: "Admin",
             required: true,
         },
+        image: { type: String, default: null }, // Optional image URL
     },
     { timestamps: true } // Automatically adds `createdAt` and `updatedAt`
 );
