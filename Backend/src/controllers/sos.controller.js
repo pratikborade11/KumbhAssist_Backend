@@ -3,6 +3,8 @@ import SOS from "../models/sos.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { sendNotification } from "../utils/sendSocketNotification.js";
+import { ADMIN_ID } from "../constant.js";
 
 const sendSOS = asyncHandler(async (req, res) => {
     const { userId, location, message } = req.body;
@@ -22,7 +24,8 @@ const sendSOS = asyncHandler(async (req, res) => {
     });
 
     // Emit SOS event using Socket.io
-    // sendSocketNotification("newSOS", sosRequest);
+    const adminId = ADMIN_ID;
+    sendNotification(adminId, "newSOS", sosRequest);
 
     res.status(201).json(
         new ApiResponse(201, sosRequest, "SOS request created")

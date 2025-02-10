@@ -3,7 +3,12 @@ import { Types } from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import { deleteFromCloudinary, uploadToCloudinary } from "../utils/uploadCloudinary.js";
+import {
+    deleteFromCloudinary,
+    uploadToCloudinary,
+} from "../utils/uploadCloudinary.js";
+import { ADMIN_ID } from "../constant.js";
+import { sendNotification } from "../utils/sendSocketNotification.js"
 
 // Create a new incident report
 export const reportIncident = asyncHandler(async (req, res) => {
@@ -34,6 +39,9 @@ export const reportIncident = asyncHandler(async (req, res) => {
 
     // here socket.io
     // from here socket.io is used to send notification
+    // Send real-time notification to the admin
+    const adminId = ADMIN_ID; // Replace with actual admin user ID from DB
+    sendNotification(adminId, "newIncident", incident);
 
     res.status(201).json(
         new ApiResponse(201, incident, "Incident reported successfully")
@@ -120,7 +128,7 @@ export const deleteIncident = asyncHandler(async (req, res) => {
     }
 
     // Delete the image from Cloudinary
-    await deleteFromCloudinary(incident.image)
+    await deleteFromCloudinary(incident.image);
 
     // Delete the incident from the database
     await Incident.findByIdAndDelete(incidentId);
