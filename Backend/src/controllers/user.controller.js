@@ -197,42 +197,7 @@ const userProfile = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found");
     }
 
-    // Validate required fields
-    if (!fullName || !dob || !adharNumber || !age || !gender || !address) {
-        throw new ApiError(400, "All fields are required");
-    }
-
-    // Validate fullName (string)
-    if (typeof fullName !== "string" || fullName.trim() === "") {
-        throw new ApiError(400, "Full name must be a non-empty string");
-    }
-
-    // Validate dob (Date of Birth should be a valid date)
-    const dateOfBirth = new Date(dob);
-    if (isNaN(dateOfBirth.getTime())) {
-        throw new ApiError(400, "Invalid date of birth");
-    }
-
-    // Validate adharNumber (should be a 12-digit number)
-    if (!/^\d{12}$/.test(adharNumber)) {
-        throw new ApiError(400, "Adhar number must be a 12-digit number");
-    }
-
-    // Validate age (should be a positive number)
-    if (!Number.isInteger(age) || age <= 0) {
-        throw new ApiError(400, "Age must be a positive integer");
-    }
-
-    // Validate gender (should be a valid string)
-    const validGenders = ["Male", "Female", "Other"];
-    if (!validGenders.includes(gender)) {
-        throw new ApiError(400, "Gender must be 'Male', 'Female', or 'Other'");
-    }
-
-    // Validate address (should be a non-empty string)
-    if (typeof address !== "string" || address.trim() === "") {
-        throw new ApiError(400, "Address must be a non-empty string");
-    }
+   
 
     // Check if the profile already exists for the user
     const existingProfile = await UserProfile.findOne({ userID });
@@ -264,11 +229,11 @@ const userDetails = asyncHandler(async (req, res) => {
     // const userID = req.params.user;  if want to get by params
 
     // Check if the user exists
-    const user = await UserProfile.find({userID: userID}).populate("userID");
+    const user = await UserProfile.findOne({ userID }).populate("userID");
     if (!user) {
         return res.status(404).json(new ApiError(404, "User not found"));
     }
-
+    
     res.status(200).json(new ApiResponse(200, user, "User Details"));
 });
 
@@ -282,38 +247,7 @@ const updateUserDetails = asyncHandler(async (req, res, next) => {
         throw new ApiError(404, "User not found");
     }
 
-    // Validate required fields (you can skip this if you want to allow partial updates)
-    if (!fullName || !dob || !adharNumber || !age || !gender || !address) {
-        throw new ApiError(400, "All fields are required");
-    }
-
-    // Validate fields, e.g., fullName, dob, etc.
-    if (typeof fullName !== "string" || fullName.trim() === "") {
-        throw new ApiError(400, "Full name must be a non-empty string");
-    }
-
-    const dateOfBirth = new Date(dob);
-    if (isNaN(dateOfBirth.getTime())) {
-        throw new ApiError(400, "Invalid date of birth");
-    }
-
-    if (!/^\d{12}$/.test(adharNumber)) {
-        throw new ApiError(400, "Adhar number must be a 12-digit number");
-    }
-
-    if (!Number.isInteger(age) || age <= 0) {
-        throw new ApiError(400, "Age must be a positive integer");
-    }
-
-    const validGenders = ["Male", "Female", "Other"];
-    if (!validGenders.includes(gender)) {
-        throw new ApiError(400, "Gender must be 'Male', 'Female', or 'Other'");
-    }
-
-    if (typeof address !== "string" || address.trim() === "") {
-        throw new ApiError(400, "Address must be a non-empty string");
-    }
-
+    
     // Find the user's profile and update it
     const userProfile = await UserProfile.findOne({ userID });
     if (!userProfile) {

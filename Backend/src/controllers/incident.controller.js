@@ -3,13 +3,18 @@ import { Types } from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import { deleteFromCloudinary, uploadToCloudinary } from "../utils/uploadCloudinary.js";
+import {
+    deleteFromCloudinary,
+    uploadToCloudinary,
+} from "../utils/uploadCloudinary.js";
 
 // Create a new incident report
 export const reportIncident = asyncHandler(async (req, res) => {
-    const { location, description } = req.body;
+    const { description, title } = req.body;
+    let { location } = req.body;
     const userId = req.user?._id;
     const image = req.files.image;
+    location = JSON.parse(location); // ✅ Convert location back to an object
 
     if (!image) {
         return res.status(400).json(new ApiError(400, "Provide Image"));
@@ -20,6 +25,17 @@ export const reportIncident = asyncHandler(async (req, res) => {
             .status(400)
             .json(new ApiError(400, "Invalid user ID format"));
     }
+    if (!location || !location.latitude || !location.longitude) {
+        return res
+            .status(400)
+            .json(
+                new ApiError(
+                    400,
+                    "Invalid location",
+                    "Location must contain latitude and longitude"
+                )
+            );
+    }
 
     const secureUrl = await uploadToCloudinary(image.tempFilePath);
 
@@ -27,6 +43,7 @@ export const reportIncident = asyncHandler(async (req, res) => {
 
     const incident = await Incident.create({
         userId,
+        title,
         location,
         description,
         image: secureUrl.secure_url,
@@ -120,7 +137,7 @@ export const deleteIncident = asyncHandler(async (req, res) => {
     }
 
     // Delete the image from Cloudinary
-    await deleteFromCloudinary(incident.image)
+    await deleteFromCloudinary(incident.image);
 
     // Delete the incident from the database
     await Incident.findByIdAndDelete(incidentId);

@@ -7,13 +7,26 @@ const sosSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
+        // location: {
+        //     type: String,
+        //     required: true,
+        // },
         location: {
-            type: String,
+            type: {
+              latitude: {
+                type: Number,
+                required: true,
+              },
+              longitude: {
+                type: Number,
+                required: true,
+              },
+            },
             required: true,
-        },
-        message: {
-            type: String,
-        },
+          },
+        // message: {
+        //     type: String,
+        // },
         status: {
             type: String,
             enum: ["pending", "resolved"],

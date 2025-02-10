@@ -4,30 +4,58 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
+// const sendSOS = asyncHandler(async (req, res) => {
+//     const { location } = req.body;
+//     const userId = req.user?._id;
+
+//     if (!Types.ObjectId.isValid(userId)) {
+//         return res
+//             .status(400)
+//             .json(
+//                 new ApiError(400, "Invalid SOS ID format", "Wrong Type Of ID")
+//             );
+//     }
+//     const parsedLocation = JSON.parse(location);
+//     const sosRequest = await SOS.create({
+//         userId,
+//         location : parsedLocation,
+//         // message,
+//     });
+
+//     // Emit SOS event using Socket.io
+//     // sendSocketNotification("newSOS", sosRequest);
+
+//     res.status(201).json(
+//         new ApiResponse(201, sosRequest, "SOS request created")
+//     );
+// });
+
+
 const sendSOS = asyncHandler(async (req, res) => {
-    const { userId, location, message } = req.body;
-
+    const { location } = req.body; // Get the location object from request body
+    const userId = req.user?._id;
+  
     if (!Types.ObjectId.isValid(userId)) {
-        return res
-            .status(400)
-            .json(
-                new ApiError(400, "Invalid SOS ID format", "Wrong Type Of ID")
-            );
+      return res.status(400).json(
+        new ApiError(400, "Invalid User ID", "Wrong Type of ID")
+      );
     }
-
+  
+    // Ensure the location is valid (should be an object with latitude and longitude)
+    if (!location || !location.latitude || !location.longitude) {
+      return res.status(400).json(
+        new ApiError(400, "Invalid location", "Location must contain latitude and longitude")
+      );
+    }
+  
     const sosRequest = await SOS.create({
-        userId,
-        location,
-        message,
+      userId,
+      location, // Save location object directly
     });
-
-    // Emit SOS event using Socket.io
-    // sendSocketNotification("newSOS", sosRequest);
-
-    res.status(201).json(
-        new ApiResponse(201, sosRequest, "SOS request created")
-    );
-});
+  
+    res.status(201).json(new ApiResponse(201, sosRequest, "SOS request created"));
+  });
+  
 
 const getSOSRequests = asyncHandler(async (req, res) => {
     const sosRequests = await SOS.find();

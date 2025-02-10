@@ -25,6 +25,6 @@ router
 
 // router.route("/user-profile").post(userProfile).patch(updateUserDetails);    for testing purpose
 
-router.route("/user-details/:user").get(userDetails);
+router.route("/user-details").get(protectRoute,userDetails);
 
 export default router;
