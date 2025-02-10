@@ -3,6 +3,8 @@ import SOS from "../models/sos.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { sendNotification } from "../utils/sendSocketNotification.js";
+import { ADMIN_ID } from "../constant.js";
 
 // const sendSOS = asyncHandler(async (req, res) => {
 //     const { location } = req.body;
@@ -52,10 +54,15 @@ const sendSOS = asyncHandler(async (req, res) => {
       userId,
       location, // Save location object directly
     });
-  
-    res.status(201).json(new ApiResponse(201, sosRequest, "SOS request created"));
-  });
-  
+
+    // Emit SOS event using Socket.io
+    const adminId = ADMIN_ID;
+    sendNotification(adminId, "newSOS", sosRequest);
+
+    res.status(201).json(
+        new ApiResponse(201, sosRequest, "SOS request created")
+    );
+});
 
 const getSOSRequests = asyncHandler(async (req, res) => {
     const sosRequests = await SOS.find();

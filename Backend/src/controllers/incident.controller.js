@@ -7,6 +7,8 @@ import {
     deleteFromCloudinary,
     uploadToCloudinary,
 } from "../utils/uploadCloudinary.js";
+import { ADMIN_ID } from "../constant.js";
+import { sendNotification } from "../utils/sendSocketNotification.js"
 
 // Create a new incident report
 export const reportIncident = asyncHandler(async (req, res) => {
@@ -51,6 +53,9 @@ export const reportIncident = asyncHandler(async (req, res) => {
 
     // here socket.io
     // from here socket.io is used to send notification
+    // Send real-time notification to the admin
+    const adminId = ADMIN_ID; // Replace with actual admin user ID from DB
+    sendNotification(adminId, "newIncident", incident);
 
     res.status(201).json(
         new ApiResponse(201, incident, "Incident reported successfully")

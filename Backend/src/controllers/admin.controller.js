@@ -85,4 +85,14 @@ const loginAdmin = asyncHandler(async (req, res) => {
         );
 });
 
-export { loginAdmin, registerAdmin };
+const logoutAdmin = asyncHandler(async (req, res) => {
+    const options = {
+        httpOnly: true,
+        secure: true,
+    };
+    res.status(200)
+        .clearCookie("jwt", options)
+        .json(new ApiResponse(200, {}, "User Logged Out"));
+});
+
+export { loginAdmin, registerAdmin, logoutAdmin };

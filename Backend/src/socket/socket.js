@@ -32,4 +32,4 @@ io.on("connection", (socket) => {
     });
 });
 
-export { app, httpServer, io };
+export { app, httpServer, io, userSocketMap };

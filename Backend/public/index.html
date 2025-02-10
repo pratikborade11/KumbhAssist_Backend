@@ -31,6 +31,10 @@
             console.log("Connected to the server with socket ID:", socket.id);
         });
 
+        socket.on("newNotification", data => {
+            console.log(data);
+        })
+
         // You can now listen for any events
         socket.on("message", (data) => {
             console.log("Received message:", data);

@@ -13,7 +13,7 @@ const router = Router();
 router.route("/send").post(protectRoute, sendSOS);
 
 // Route for retrieving all SOS requests (for admins)
-router.route("/").get(getSOSRequests);
+router.route("/").get(isAdmin, getSOSRequests);
 
 // Route for resolving an SOS request
 router.route("/:sosId/resolve").patch(isAdmin, resolveSOS);
