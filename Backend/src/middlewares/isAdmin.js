@@ -4,7 +4,10 @@ import ApiError from "../utils/ApiError.js";
 
 const isAdmin = async (req, res, next) => {
     try {
-        const token = req.cookies?.jwt; // Get token from cookies
+        const token =
+            req.cookies?.jwt || // 1. Check cookies
+            req.headers["authorization"]?.split(" ")[1] || // 2. Check Authorization header (Bearer token)
+            req.query.token; // 3. Check URL query parameter
 
         if (!token) {
             return res

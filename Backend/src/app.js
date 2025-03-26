@@ -27,7 +27,8 @@ import healthCheckRouter from "./routes/healthCheck.js";
 import sosRouter from "./routes/sos.routes.js";
 import adminRouter from "./routes/admin.routes.js";
 import incidentRoutes from "./routes/incident.routes.js";
-import notification from './routes/notification.route.js'
+import notification from "./routes/notification.route.js";
+import getDashboardStats from "./routes/dashboard.routes.js";
 
 app.use("/health", healthCheckRouter); // Health check route
 
@@ -35,7 +36,8 @@ app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/sos", sosRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/incidents", incidentRoutes);
-app.use("/api/v1/notification", notification)
+app.use("/api/v1/notification", notification);
+app.use("/api/v1/dashboard", getDashboardStats);
 
 // for testing socket functionality only
 app.get("/", (req, res) => {
