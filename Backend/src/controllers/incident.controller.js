@@ -8,7 +8,8 @@ import {
     uploadToCloudinary,
 } from "../utils/uploadCloudinary.js";
 import { ADMIN_ID } from "../constant.js";
-import { sendNotification } from "../utils/sendSocketNotification.js"
+import { sendNotification } from "../utils/sendSocketNotification.js";
+import ApiFeatures from "../utils/ApiFeatures.js";
 
 // Create a new incident report
 export const reportIncident = asyncHandler(async (req, res) => {
@@ -64,10 +65,18 @@ export const reportIncident = asyncHandler(async (req, res) => {
 
 // Get all incident reports (for admin)
 export const getAllIncidents = asyncHandler(async (req, res) => {
-    const incidents = await Incident.find().populate("userId");
+    const apiFeatures = new ApiFeatures(
+        Incident.find().populate("userId", "username phoneNumber"),
+        req.query
+    )
+        .filtering()
+        .sorting()
+        .pagination();
+
+    const incidents = await apiFeatures.query.exec();
 
     res.status(200).json(
-        new ApiResponse(200, incidents, "List of all incidents")
+        new ApiResponse(200, incidents, `Incidents: ${incidents.length}`)
     );
 });
 

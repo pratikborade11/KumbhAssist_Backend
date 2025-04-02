@@ -4,6 +4,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { io } from "../socket/socket.js"; // Import socket.io instance
+import { uploadToCloudinary } from "../utils/uploadCloudinary.js";
 
 // Helper function to get today's start and end time
 const getTodayDateRange = () => {
@@ -41,7 +42,7 @@ export const sendNotification = asyncHandler(async (req, res) => {
     const notification = await Notification.create({ title, message, adminId, image: imageUrl });
 
     // Emit notification to all users except admin
-    req.io.sockets.emit("newNotification", notification);
+    io.sockets.emit("newNotification", notification);
 
     res.status(201).json(new ApiResponse(201, notification, "Notification sent successfully"));
 });

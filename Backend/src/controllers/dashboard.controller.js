@@ -33,7 +33,7 @@ const getDashboardStat = asyncHandler(async (req, res) => {
 });
 
 const getRecentSOSAlearts = asyncHandler(async (req, res) => {
-    const sosAlerts = await SOS.find().sort({ createdAt: -1 }).limit(10);
+    const sosAlerts = await SOS.find().sort({ createdAt: -1 }).limit(5);
 
     res.status(200).json(new ApiResponse(200, sosAlerts));
 });
