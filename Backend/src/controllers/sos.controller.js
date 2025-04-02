@@ -65,7 +65,7 @@ const sendSOS = asyncHandler(async (req, res) => {
 });
 
 const getSOSRequests = asyncHandler(async (req, res) => {
-    const sosRequests = await SOS.find();
+    const sosRequests = await SOS.find().populate('userId', 'username phoneNumber');
     res.status(200).json(new ApiResponse(200, sosRequests, "All Requests"));
 });
 
